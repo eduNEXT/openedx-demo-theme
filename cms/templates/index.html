@@ -31,12 +31,8 @@ from openedx.core.djangolib.js_utils import (
       <h3 class="sr">${_("Page Actions")}</h3>
       <ul>
         <li class="nav-item">
-          % if course_creator_status=='granted':
           <a href="#" class="button new-button new-course-button"><span class="icon fa fa-plus icon-inline" aria-hidden="true"></span>
               ${_("New Course")}</a>
-          % elif course_creator_status=='disallowed_for_this_site' and settings.FEATURES.get('STUDIO_REQUEST_EMAIL',''):
-          <a href="mailto:${settings.FEATURES.get('STUDIO_REQUEST_EMAIL','')}">${_("Email staff to create course")}</a>
-          % endif
           % if show_new_library_button:
             <a href="#" class="button new-button new-library-button"><span class="icon fa fa-plus icon-inline" aria-hidden="true"></span>
             ${_("New Library")}</a>
@@ -53,7 +49,6 @@ from openedx.core.djangolib.js_utils import (
   <section class="content">
     <article class="content-primary" role="main">
 
-      % if course_creator_status=='granted':
       <div class="wrapper-create-element wrapper-create-course">
         <form class="form-create create-course course-info" id="create-course-form" name="create-course-form">
           <div class="wrap-error">
@@ -129,8 +124,6 @@ from openedx.core.djangolib.js_utils import (
           </div>
         </form>
       </div>
-
-      % endif
 
       %if libraries_enabled and show_new_library_button:
       <div class="wrapper-create-element wrapper-create-library">
@@ -376,7 +369,6 @@ from openedx.core.djangolib.js_utils import (
           </div>
         </div>
 
-        %if course_creator_status == "granted":
         <div class="notice-item has-actions">
           <div class="msg">
             <h3 class="title">${_('Create Your First Course')}</h3>
@@ -391,92 +383,7 @@ from openedx.core.djangolib.js_utils import (
             </li>
           </ul>
         </div>
-        % endif
 
-      </div>
-      % endif
-
-
-      %if course_creator_status == "unrequested":
-      <div class="wrapper wrapper-creationrights">
-        <h3 class="title">
-          <a href="#instruction-creationrights" class="ui-toggle-control show-creationrights"><span class="label">${_('Becoming a Course Creator in {studio_name}').format(studio_name=settings.STUDIO_SHORT_NAME)}</span> <span class="icon fa fa-times-circle" aria-hidden="true"></span></a>
-        </h3>
-
-        <div class="notice notice-incontext notice-instruction notice-instruction-creationrights ui-toggle-target" id="instruction-creationrights">
-          <div class="copy">
-            <p>${_('{studio_name} is a hosted solution for our xConsortium partners and selected guests. Courses for which you are a team member appear above for you to edit, while course creator privileges are granted by {platform_name}. Our team will evaluate your request and provide you feedback within 24 hours during the work week.').format(
-              studio_name=settings.STUDIO_NAME, platform_name=settings.PLATFORM_NAME)}</p>
-          </div>
-
-          <div class="status status-creationrights is-unrequested">
-            <h4 class="title">${_('Your Course Creator Request Status:')}</h4>
-
-            <form id="request-coursecreator" action="${request_course_creator_url}" method="post" enctype="multipart/form-data">
-              <div class="form-actions">
-                <button type="submit" id="request-coursecreator-submit" name="request-coursecreator-submit" class="action-primary action-request"><span class="icon fa fa-cog icon-inline fa fa-spin" aria-hidden="true"></span> <span class="label">${_('Request the Ability to Create Courses')}</span></button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      %elif course_creator_status == "denied":
-      <div class="wrapper wrapper-creationrights is-shown">
-        <h3 class="title">
-          <a href="#instruction-creationrights" class="ui-toggle-control current show-creationrights"><span class="label">${_('Your Course Creator Request Status')}</span> <span class="icon fa fa-times-circle" aria-hidden="true"></span></a>
-        </h3>
-
-        <div class="notice notice-incontext notice-instruction notice-instruction-creationrights ui-toggle-target" id="instruction-creationrights">
-          <div class="copy">
-            <p>${_('{studio_name} is a hosted solution for our xConsortium partners and selected guests. Courses for which you are a team member appear above for you to edit, while course creator privileges are granted by {platform_name}. Our team is has completed evaluating your request.').format(
-              studio_name=settings.STUDIO_NAME, platform_name=settings.PLATFORM_NAME,
-            )}</p>
-          </div>
-
-          <div class="status status-creationrights has-status is-denied">
-            <h4 class="title">${_('Your Course Creator Request Status:')}</h4>
-
-            <dl class="status-update">
-              <dt class="label">${_('Your Course Creator request is:')}</dt>
-              <dd class="value">
-                <span class="status-indicator"></span>
-                <span class="value-formal">${_('Denied')}</span>
-                <span class="value-description">${_('Your request did not meet the criteria/guidelines specified by {platform_name} Staff.').format(platform_name=settings.PLATFORM_NAME)}</span>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-
-      %elif course_creator_status == "pending":
-      <div class="wrapper wrapper-creationrights is-shown">
-        <h3 class="title">
-          <a href="#instruction-creationrights" class="ui-toggle-control current show-creationrights"><span class="label">${_('Your Course Creator Request Status')}</span> <span class="icon fa fa-times-circle" aria-hidden="true"></span></a>
-        </h3>
-
-        <div class="notice notice-incontext notice-instruction notice-instruction-creationrights ui-toggle-target" id="instruction-creationrights">
-          <div class="copy">
-            <p>${_('{studio_name} is a hosted solution for our xConsortium partners and selected guests. Courses for which you are a team member appear above for you to edit, while course creator privileges are granted by {platform_name}. Our team is currently  evaluating your request.').format(
-              studio_name=settings.STUDIO_NAME, platform_name=settings.PLATFORM_NAME,
-            )}</p>
-          </div>
-
-          <div class="status status-creationrights has-status is-pending">
-            <h4 class="title">${_('Your Course Creator Request Status:')}</h4>
-
-            <dl class="status-update">
-              <dt class="label">${_('Your Course Creator request is:')}</dt>
-              <dd class="value">
-                <span class="status-indicator"></span>
-                <span class="value-formal">${_('Pending')}</span>
-                <span class="value-description">
-                  ${_('Your request is currently being reviewed by {platform_name} staff and should be updated shortly.').format(platform_name=settings.PLATFORM_NAME)}
-                </span>
-              </dd>
-            </dl>
-          </div>
-        </div>
       </div>
       % endif
 
@@ -554,36 +461,6 @@ from openedx.core.djangolib.js_utils import (
         </ol>
       </div>
 
-      % if course_creator_status=='disallowed_for_this_site' and settings.FEATURES.get('STUDIO_REQUEST_EMAIL',''):
-      <div class="bit">
-        <h3 class="title title-3">${_("Can I create courses in {studio_name}?").format(studio_name=settings.STUDIO_NAME)}</h3>
-        <p>${Text(_("In order to create courses in {studio_name}, you must {link_start}contact {platform_name} staff to help you create a course{link_end}.")).format(
-            studio_name=settings.STUDIO_NAME,
-            platform_name=settings.PLATFORM_NAME,
-            link_start=HTML('<a href="mailto:{email}">').format(email=settings.FEATURES.get('STUDIO_REQUEST_EMAIL','')),
-            link_end=HTML("</a>"),
-          )}</p>
-      </div>
-      % endif
-
-      % if course_creator_status == "unrequested":
-      <div class="bit">
-        <h3 class="title title-3">${_("Can I create courses in {studio_name}?").format(studio_name=settings.STUDIO_NAME)}</h3>
-        <p>${_('In order to create courses in {studio_name}, you must have course creator privileges to create your own course.').format(studio_name=settings.STUDIO_NAME)}</p>
-      </div>
-
-      % elif course_creator_status == "denied":
-      <div class="bit">
-        <h3 class="title title-3">${_("Can I create courses in {studio_name}?").format(studio_name=settings.STUDIO_NAME)}</h3>
-        <p>${Text(_("Your request to author courses in {studio_name} has been denied. Please {link_start}contact {platform_name} Staff with further questions{link_end}.")).format(
-            studio_name=settings.STUDIO_NAME,
-            platform_name=settings.PLATFORM_NAME,
-            link_start=HTML('<a href="mailto:{email}">').format(email=settings.TECH_SUPPORT_EMAIL),
-            link_end=HTML('</a>'),
-          )}</p>
-      </div>
-
-      % endif
     </aside>
   </section>
 
